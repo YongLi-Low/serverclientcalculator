@@ -14,22 +14,29 @@ public class Server {
         
         System.out.println("Starting server on port 2308..");
 
-        // Create a new server socket and listen to a specific port
+        // Create a new server socket and listen to a specific port (waits for client requests)
         ServerSocket server = new ServerSocket(2308);
 
         // Wait for a connection
         System.out.println("Waiting for incoming connection..");
+        // Socket to use for communication with the client
         Socket conn = server.accept();
         System.out.println("Got a connection!");
 
-        while (true) {
+        boolean exit = false;
+
+        while (!exit) {
 
             // Do something
             // Client provided with "num1 operand num2". Server needs to read it.
             InputStream is = conn.getInputStream();
-            ObjectInputStream ois = new ObjectInputStream(is);
+            ObjectInputStream ois = new ObjectInputStream(is); // read data written by ObjectOutputStream
             String input = ois.readUTF();
             System.out.printf("Client's input: %s\n", input);
+
+            if (input.equals("exit")) {
+                exit = true;
+            }
 
             // Separate the inputs to num1, operand and num2 to an array
             String[] clientInput = input.split(" ");
@@ -72,6 +79,6 @@ public class Server {
         }
         // Close the connection, all streams will be closed
         conn.close();
-        server.close()
+        server.close();
     }
 }
